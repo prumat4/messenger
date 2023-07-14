@@ -1,24 +1,44 @@
 #include <iostream>
-#include <boost/multiprecision/cpp_int.hpp>
+#include <boost/asio.hpp>
+#include <array>
 
-namespace mp = boost::multiprecision;
-
-mp::cpp_int factorial(int n) {
-    mp::cpp_int result = 1;
-    for (int i = 1; i <= n; ++i) {
-        result *= i;
-    }
-    return result;
-}
+using boost::asio::ip::tcp;
 
 int main() {
-    int number;
-    std::cout << "Enter a number: ";
-    std::cin >> number;
+    try{
+        boost::asio::io_context io_context;
 
-    mp::cpp_int result = factorial(number);
+        tcp::resolver resolver (io_context);
+        boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve("127.0.0.1", "2222");
 
-    std::cout << "Factorial of " << number << " is: " << result << std::endl;
+        tcp::socket socket (io_context);
+
+        // establishes a connection between a socket and one of the endpoints in a sequence of resolved endpoints.
+        boost::asio::connect(socket, endpoints);
+
+        for(;;) {
+            // listen for message
+            std::array<char, 128> buf;
+            boost::system::error_code error;
+
+            // reads data from a socket into a buffer and returns the number of bytes read
+            size_t len = socket.read_some(boost::asio::buffer(buf), error);
+
+            // end of file
+            // In network programming, an "end of file" error typically occurs when the connection has been closed or terminated by the remote endpoint.
+            // It indicates that no more data will be received from the socket.
+            if(error == boost::asio::error::eof) {
+                // clean connection cut off
+                break;
+            } else if(error) {
+                throw boost::system::system_error(error);
+            }
+
+            std::cout.write(buf.data(), len);
+        }
+    } catch (std::exception& e){
+        std::cerr << e.what() << std::endl;
+    }
 
     return 0;
 }
