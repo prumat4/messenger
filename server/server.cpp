@@ -20,19 +20,21 @@ int main() {
             tcp::socket socket(io_context);
 
             acceptor.accept(socket);
-
             std::cout << "Client connected! Waiting for message...\n";
+            
+            for(;;) {
 
-            std::string buf; 
-            buf.resize(128);
+                std::string buf; 
+                buf.resize(128);
 
-            socket.read_some(boost::asio::buffer(buf), error);
+                socket.read_some(boost::asio::buffer(buf), error);
 
-            if (error)
-                throw boost::system::system_error(error);
+                if (error)
+                    throw boost::system::system_error(error);
 
-            std::cout << "Received message from client: " << buf << std::endl;
-            boost::asio::write(socket, boost::asio::buffer(buf), error);
+                std::cout << "Received message from client: " << buf << std::endl;
+                boost::asio::write(socket, boost::asio::buffer(buf), error);
+            }
         }
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;

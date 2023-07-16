@@ -15,26 +15,28 @@ int main() {
 
         boost::asio::connect(socket, endpoints);
 
-        std::string message; 
-        boost::system::error_code error;
-        
-        std::cout << "Give me your message: ";
-        std::getline(std::cin, message);
-        
-        boost::asio::write(socket, boost::asio::buffer(message), error);
-        
-        if (error)
-            throw boost::system::system_error(error);
-        
-        std::string response;
-        response.resize(128);
-        
-        socket.read_some(boost::asio::buffer(response), error);
-        
-        if (error)
-            throw boost::system::system_error(error);
-        
-        std::cout << "Response from server: " << response << std::endl;
+        for(;;) {
+            std::string message; 
+            boost::system::error_code error;
+
+            std::cout << "Give me your message: ";
+            std::getline(std::cin, message);
+
+            boost::asio::write(socket, boost::asio::buffer(message), error);
+
+            if (error)
+                throw boost::system::system_error(error);
+
+            std::string response;
+            response.resize(128);
+
+            socket.read_some(boost::asio::buffer(response), error);
+
+            if (error)
+                throw boost::system::system_error(error);
+
+            std::cout << "Response from server: " << response << std::endl;
+        }
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
     }
