@@ -19,14 +19,6 @@ int main() {
             std::string message; 
             boost::system::error_code error;
 
-            std::cout << "Give me your message: ";
-            std::getline(std::cin, message);
-
-            boost::asio::write(socket, boost::asio::buffer(message), error);
-
-            if (error)
-                throw boost::system::system_error(error);
-
             std::string response;
             response.resize(128);
 
