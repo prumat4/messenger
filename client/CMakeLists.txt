@@ -7,7 +7,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 set(SOURCES
     client.hpp
-    client.cpp
+    main.cpp
 )
 
 add_executable(client ${SOURCES})
